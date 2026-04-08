@@ -1,5 +1,7 @@
 # Raven OS
 
+**Developed by Aaron Diltz**
+
 A sovereign home security and infrastructure network built on Raspberry Pi hardware.
 All data stays local. No third-party cloud. No signups. No API keys.
 
