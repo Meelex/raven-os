@@ -1,0 +1,37 @@
+# Secrets
+esp32-companion/src/secrets.h
+*.conf
+*.nmconnection
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+raven_env/
+griffin_env/
+
+# Databases (contain user data)
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+*.txt
+raven_intel.txt
+raven_ring_motion.log
+raven_ring_packets.log
+
+# Build artifacts
+*.spec
+*.exe
+
+# System
+.DS_Store
+desktop.ini
+Thumbs.db

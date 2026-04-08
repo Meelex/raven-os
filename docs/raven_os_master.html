@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Raven OS — Master Reference (2026)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f; --panel:#0f0f1a; --panel2:#13131c; --border:#1e1e2e;
+  --gold:#c9a84c; --gold2:#e8c96a; --blue:#88aadd; --purple:#aa77dd;
+  --green:#66cc88; --red:#cc6666; --text:#cccccc; --text2:#999; --text3:#666;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;}
+
+/* NAV */
+nav{position:sticky;top:0;background:#07070e;border-bottom:1px solid #1a1a2a;padding:10px 24px;display:flex;gap:20px;flex-wrap:wrap;z-index:100;}
+nav a{color:var(--text3);text-decoration:none;font-size:.72rem;font-family:'Share Tech Mono',monospace;letter-spacing:.04em;transition:color .2s;}
+nav a:hover{color:var(--gold);}
+
+/* HERO */
+.hero{padding:48px 32px 32px;border-bottom:1px solid var(--border);}
+.hero h1{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);letter-spacing:.1em;margin-bottom:6px;}
+.hero .tagline{color:var(--text3);font-size:.85rem;font-family:'Share Tech Mono',monospace;margin-bottom:20px;}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;font-family:'Share Tech Mono',monospace;margin:3px;}
+.pill.legiom{background:#0a0f20;border:1px solid #334;color:#88aaff;}
+.pill.duat{background:#1a1200;border:1px solid #443;color:var(--gold);}
+.pill.raven{background:#150a20;border:1px solid #434;color:var(--purple);}
+.pill.scarab{background:#0a1a10;border:1px solid #343;color:var(--green);}
+.pill.anubis{background:#1a0a0a;border:1px solid #433;color:var(--red);}
+.pill.vps{background:#0a1520;border:1px solid #336;color:#66bbff;}
+.pill.future{background:#111;border:1px solid #222;color:var(--text3);font-style:italic;}
+
+/* LAYOUT */
+.content{max-width:1100px;margin:0 auto;padding:0 24px 80px;}
+section{padding:40px 0;border-bottom:1px solid #12121e;}
+h2{font-family:'Cinzel',serif;color:var(--blue);font-size:1.1rem;letter-spacing:.06em;margin-bottom:16px;}
+h3{color:var(--gold);font-size:.9rem;font-family:'Share Tech Mono',monospace;letter-spacing:.04em;margin:24px 0 10px;}
+h4{color:var(--text2);font-size:.8rem;margin:16px 0 8px;}
+p{font-size:.85rem;color:var(--text2);margin-bottom:10px;}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:16px;}
+th{background:#0d0d18;color:var(--text3);font-weight:600;text-align:left;padding:8px 12px;border-bottom:1px solid #1e1e2e;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.04em;}
+td{padding:7px 12px;border-bottom:1px solid #12121e;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#0d0d18;}
+
+/* CODE */
+pre,code{font-family:'Share Tech Mono',monospace;}
+pre{background:#0c0c16;border:1px solid #1a1a28;border-radius:6px;padding:14px 16px;font-size:.75rem;overflow-x:auto;margin-bottom:14px;color:#aabbcc;line-height:1.7;}
+code{background:#13131c;padding:1px 5px;border-radius:3px;font-size:.8rem;color:#99bbdd;}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:20px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.card.legiom::before{background:linear-gradient(90deg,#4477cc,#88aaff);}
+.card.duat::before{background:linear-gradient(90deg,#c9a84c,#e8c96a);}
+.card.raven::before{background:linear-gradient(90deg,#7755aa,#aa77dd);}
+.card.scarab::before{background:linear-gradient(90deg,#44aa66,#66cc88);}
+.card.anubis::before{background:linear-gradient(90deg,#aa4444,#cc6666);}
+.card.vps::before{background:linear-gradient(90deg,#2266aa,#66aaee);}
+.card h3{margin-top:0;}
+.spec{display:flex;justify-content:space-between;font-size:.73rem;padding:5px 0;border-bottom:1px solid #12121e;}
+.spec:last-child{border-bottom:none;}
+.spec-k{color:var(--text3);}
+.spec-v{color:var(--text);text-align:right;max-width:60%;}
+
+/* FLOW */
+.flow{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Share Tech Mono',monospace;font-size:.75rem;line-height:1.9;margin-bottom:14px;}
+.flow .step{color:var(--text2);}
+.flow .arrow{color:var(--text3);}
+.flow .action{color:var(--gold);}
+.flow .result{color:var(--green);}
+.flow .warn{color:var(--red);}
+
+/* PORT TABLE */
+.port-legiom{color:#88aaff} .port-duat{color:var(--gold)} .port-raven{color:var(--purple)} .port-scarab{color:var(--green)} .port-vps{color:#66bbff}
+
+/* TAGS */
+.tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;}
+.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:.65rem;font-family:'Share Tech Mono',monospace;}
+.tag.gold{background:#1a1200;border:1px solid #443;color:var(--gold);}
+.tag.blue{background:#0a0f20;border:1px solid #334;color:var(--blue);}
+.tag.purple{background:#150a20;border:1px solid #434;color:var(--purple);}
+.tag.green{background:#0a1a10;border:1px solid #343;color:var(--green);}
+.tag.red{background:#1a0a0a;border:1px solid #433;color:var(--red);}
+.tag.dim{background:#111;border:1px solid #222;color:var(--text3);}
+.tag.cyan{background:#0a1520;border:1px solid #336;color:#66bbff;}
+
+/* CALLOUT */
+.callout{background:#0f0f1a;border-left:3px solid var(--gold);padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:.82rem;color:var(--text2);}
+.callout.blue{border-color:var(--blue);}
+.callout.green{border-color:var(--green);}
+.callout.red{border-color:var(--red);}
+
+/* GRID 2COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+
+/* CHECKLIST */
+.checklist{list-style:none;font-size:.8rem;}
+.checklist li{padding:5px 0;border-bottom:1px solid #12121e;display:flex;align-items:baseline;gap:8px;}
+.checklist li:last-child{border-bottom:none;}
+.check-done{color:var(--green);}
+.check-pend{color:var(--red);}
+.check-fut{color:var(--text3);}
+
+/* RARITY COLORS */
+.r-common{color:#aaa} .r-uncommon{color:#66bbff} .r-rare{color:#aa77dd} .r-unique{color:#e8c96a} .r-legendary{color:#ff8833} .r-raid{color:#cc4444}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#nodes">Nodes</a>
+  <a href="#wireguard">WireGuard</a>
+  <a href="#services">Services</a>
+  <a href="#pihole">Pi-hole</a>
+  <a href="#ssh">SSH</a>
+  <a href="#security">Security Flow</a>
+  <a href="#watchdog">Watchdog</a>
+  <a href="#raven-os">Raven OS</a>
+  <a href="#scarab">Scarab</a>
+  <a href="#ops">OPS</a>
+  <a href="#ring">Ring</a>
+  <a href="#game">Gates of Darkness</a>
+  <a href="#bitnet">BitNet</a>
+  <a href="#backlog">Backlog</a>
+  <a href="#philosophy">Philosophy</a>
+</nav>
+
+<div class="hero">
+  <h1>⬡ RAVEN OS</h1>
+  <p class="tagline">Sovereign home security + infrastructure network · All data local · No cloud · Consent-based design</p>
+  <div>
+    <span class="pill legiom">Legiom 192.168.1.6</span>
+    <span class="pill duat">Duat 192.168.1.5</span>
+    <span class="pill raven">Raven 192.168.1.3</span>
+    <span class="pill scarab">Scarab 192.168.1.2</span>
+    <span class="pill vps">VPS YOUR_VPS_IP</span>
+    <span class="pill raven">Griffin 192.168.1.8</span>
+    <span class="pill anubis future">Anubis — future</span>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>OVERVIEW</h2>
+  <p>Raven OS is a self-hosted home security and infrastructure network built entirely on Raspberry Pi hardware and a Windows workstation. Every piece of data stays on your hardware. No third-party cloud services. No API keys. No signups. The network monitors files, detects threats, locks malicious content, and requires physical human confirmation to unlock — all without touching the internet for decisions.</p>
+  <div class="callout">The network also hosts a full Egyptian-themed dungeon crawler (Gates of Darkness), a local AI (BitNet 3B), a biometric ring integration, and a WireGuard VPN with Hetzner relay — all running on the same sovereign infrastructure.</div>
+
+  <h3>WHAT YOU BUILT</h3>
+  <div class="two-col">
+    <div>
+      <div class="tags" style="flex-direction:column;gap:6px;">
+        <span class="tag gold">🔒 File threat detection + auto-lock (SHA256 → MalwareBazaar)</span>
+        <span class="tag gold">📟 Physical unlock confirmation via e-ink tap</span>
+        <span class="tag gold">🌐 LAN scanner, BLE scanner, WiFi scanner on e-ink</span>
+        <span class="tag gold">💍 Biometric ring (HR/SpO2/steps) with rolling baseline</span>
+        <span class="tag gold">🔑 WireGuard VPN — Hetzner relay, bypasses CGNAT</span>
+        <span class="tag gold">👁 Watchdog GUI — MONITOR · SLASHER · REGISTRY · OPS · SETTINGS</span>
+      </div>
+    </div>
+    <div>
+      <div class="tags" style="flex-direction:column;gap:6px;">
+        <span class="tag blue">⚔ Gates of Darkness — 8-class Egyptian dungeon crawler (Medjay · Kushite · Shaduf · Sem Priest · Nubian Archer · Shardana · Heka · Tjaty)</span>
+        <span class="tag blue">⚔ 6 rarity tiers including 64 Legendary + 64 Raid items</span>
+        <span class="tag blue">⚔ Raid system — 3 bosses, multi-phase, up to 10 players</span>
+        <span class="tag blue">⚔ In-session trade system, pet AI (Scarab headless agent)</span>
+        <span class="tag blue">🤖 BitNet 3B local AI chat — no cloud, runs on CPU</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NODES -->
+<section id="nodes">
+  <h2>NODES — HARDWARE & ROLES</h2>
+  <div class="cards">
+
+    <div class="card legiom">
+      <h3 style="color:#88aaff">LEGIOM</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Main Workstation · 192.168.1.6</p>
+      <div class="spec"><span class="spec-k">CPU</span><span class="spec-v">Intel Core i9</span></div>
+      <div class="spec"><span class="spec-k">GPU</span><span class="spec-v">RTX 5070 Laptop</span></div>
+      <div class="spec"><span class="spec-k">RAM</span><span class="spec-v">16 GB</span></div>
+      <div class="spec"><span class="spec-k">OS</span><span class="spec-v">Windows 11 Home</span></div>
+      <div class="spec"><span class="spec-k">SSH</span><span class="spec-v">OpenSSH sshd — Private network only</span></div>
+      <div class="spec"><span class="spec-k">Auth keys</span><span class="spec-v">ProgramData/ssh/administrators_authorized_keys</span></div>
+      <div class="spec"><span class="spec-k">Network</span><span class="spec-v">YourNetworkName — must be set to Private</span></div>
+      <div class="spec"><span class="spec-k">WireGuard</span><span class="spec-v">172.16.0.6 (legiom_wireguard.conf)</span></div>
+      <div class="tags">
+        <span class="tag blue">Watchdog GUI</span>
+        <span class="tag blue">BitNet 3B LLM</span>
+        <span class="tag blue">Downloads monitor</span>
+        <span class="tag blue">Lock target (icacls)</span>
+      </div>
+    </div>
+
+    <div class="card duat">
+      <h3 style="color:var(--gold)">DUAT</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Home Base · Raspberry Pi 5 · 192.168.1.5 (static)</p>
+      <div class="spec"><span class="spec-k">Hash DB</span><span class="spec-v">port 6174 · SQLite + MalwareBazaar</span></div>
+      <div class="spec"><span class="spec-k">Unlock Service</span><span class="spec-v">port 6176 · SSH broker</span></div>
+      <div class="spec"><span class="spec-k">Ring Service</span><span class="spec-v">port 7744 · BLE COLMI R02</span></div>
+      <div class="spec"><span class="spec-k">Game Server</span><span class="spec-v">port 5000 · Gates of Darkness</span></div>
+      <div class="spec"><span class="spec-k">Pi-hole</span><span class="spec-v">DNS (future)</span></div>
+      <div class="spec"><span class="spec-k">SSH key</span><span class="spec-v">/home/duat/.ssh/duat_horus_key → Legiom</span></div>
+      <div class="tags">
+        <span class="tag gold">Always-on hub</span>
+        <span class="tag gold">Hash verdicts</span>
+        <span class="tag gold">File lock broker</span>
+        <span class="tag gold">Ring biometrics</span>
+        <span class="tag gold">Game server</span>
+      </div>
+    </div>
+
+    <div class="card raven">
+      <h3 style="color:var(--purple)">RAVEN</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Portable Device · Pi Zero 2 W · 192.168.1.3</p>
+      <div class="spec"><span class="spec-k">Display</span><span class="spec-v">Waveshare 2.13" V4 · 250×122 · 1-bit</span></div>
+      <div class="spec"><span class="spec-k">Touch</span><span class="spec-v">gt1151 · left/right tap</span></div>
+      <div class="spec"><span class="spec-k">Unlock API</span><span class="spec-v">Flask port 6175</span></div>
+      <div class="spec"><span class="spec-k">Heartbeat</span><span class="spec-v">UDP listener port 7743</span></div>
+      <div class="spec"><span class="spec-k">SSH key</span><span class="spec-v">/home/raven/.ssh/pc_access_key → Legiom</span></div>
+      <div class="tags">
+        <span class="tag purple">E-ink OS UI</span>
+        <span class="tag purple">10-item menu</span>
+        <span class="tag purple">Physical unlock</span>
+        <span class="tag purple">LAN/BLE/WiFi scanner</span>
+      </div>
+    </div>
+
+    <div class="card scarab">
+      <h3 style="color:var(--green)">SCARAB</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Travel Router · Pi Zero 2 W · 192.168.1.2 / 172.16.0.2</p>
+      <div class="spec"><span class="spec-k">Display</span><span class="spec-v">Waveshare 2.13" e-ink · 250×122 · 1-bit</span></div>
+      <div class="spec"><span class="spec-k">VPN</span><span class="spec-v">WireGuard · tunnel 172.16.0.2</span></div>
+      <div class="spec"><span class="spec-k">Agent loop</span><span class="spec-v">scarab_agent.py · tick every 5s</span></div>
+      <div class="spec"><span class="spec-k">Heartbeat</span><span class="spec-v">POST /api/pets/heartbeat every 5 min</span></div>
+      <div class="spec"><span class="spec-k">Reports to</span><span class="spec-v">Duat :5000</span></div>
+      <div class="tags">
+        <span class="tag green">Fiancée's router</span>
+        <span class="tag green">WireGuard VPN</span>
+        <span class="tag green">Headless dungeon AI</span>
+        <span class="tag green">Floor retreat logic</span>
+        <span class="tag green">E-ink farming display</span>
+        <span class="tag green">Game pet +20% gold</span>
+      </div>
+    </div>
+
+    <div class="card vps">
+      <h3 style="color:#66bbff">VPS — HETZNER HELSINKI</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">WireGuard Relay · YOUR_VPS_IP</p>
+      <div class="spec"><span class="spec-k">Purpose</span><span class="spec-v">Bypasses T-Mobile CGNAT</span></div>
+      <div class="spec"><span class="spec-k">WireGuard port</span><span class="spec-v">UDP 443 (disguised as HTTPS)</span></div>
+      <div class="spec"><span class="spec-k">Server pubkey</span><span class="spec-v">YOUR_SERVER_PUBKEY</span></div>
+      <div class="spec"><span class="spec-k">DDNS</span><span class="spec-v">YOUR_DDNS_DOMAIN → YOUR_VPS_IP</span></div>
+      <div class="tags">
+        <span class="tag cyan">Always-on relay</span>
+        <span class="tag cyan">External VPN gateway</span>
+        <span class="tag cyan">No data stored</span>
+      </div>
+    </div>
+
+    <div class="card anubis">
+      <h3 style="color:var(--red)">ANUBIS <span style="font-size:.65rem;color:var(--text3)">[ NOT BUILT YET ]</span></h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Son's Guardian Node · Pi Zero 2 W</p>
+      <div class="spec"><span class="spec-k">Purpose</span><span class="spec-v">Vitals + location monitoring</span></div>
+      <div class="spec"><span class="spec-k">Consent</span><span class="spec-v">"They must hold hands" — both rings physically present</span></div>
+      <div class="spec"><span class="spec-k">Handshake gate</span><span class="spec-v">Stress detected → connection blocked</span></div>
+      <div class="spec"><span class="spec-k">Revoke</span><span class="spec-v">Either party · unilateral · instant</span></div>
+      <div class="spec"><span class="spec-k">Game hook</span><span class="spec-v">Low HR → harder dungeon enemies</span></div>
+      <div class="tags">
+        <span class="tag dim">Future</span>
+        <span class="tag red">Consent-gated</span>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#2a1a2a;">
+      <h3 style="color:#cc88aa;margin-top:0;">COLMI R02</h3>
+      <p style="color:var(--text3);font-size:.72rem;margin-bottom:12px;">Biometric Ring · the user's right hand</p>
+      <div class="spec"><span class="spec-k">BLE address</span><span class="spec-v">XX:XX:XX:XX:XX:XX</span></div>
+      <div class="spec"><span class="spec-k">Device name</span><span class="spec-v">YOUR_RING_NAME</span></div>
+      <div class="spec"><span class="spec-k">Data</span><span class="spec-v">HR · SpO2 · steps · battery</span></div>
+      <div class="spec"><span class="spec-k">Reads via</span><span class="spec-v">Duat Ring Service port 7744</span></div>
+      <div class="spec"><span class="spec-k">Baseline</span><span class="spec-v">Rolling confidence score — readiness, not a gate</span></div>
+      <div class="spec"><span class="spec-k">Gestures</span><span class="spec-v">Iron House edit context only</span></div>
+      <div class="spec"><span class="spec-k">2nd ring</span><span class="spec-v">Hook in raven_ring.py · fiancée · future</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WIREGUARD -->
+<section id="wireguard">
+  <h2>WIREGUARD VPN</h2>
+  <div class="callout">All external traffic routes through Hetzner VPS at <code>YOUR_VPS_IP:443</code>. T-Mobile CGNAT blocks inbound connections to Duat — the VPS relay is the bypass. All clients use full-tunnel routing (<code>AllowedIPs = 0.0.0.0/0</code>) and Pi-hole DNS (<code>192.168.1.5</code>).</div>
+
+  <h3>CLIENT CONFIGS (verified — all on Desktop)</h3>
+  <table>
+    <tr><th>File</th><th>Device</th><th>Tunnel IP</th><th>Endpoint</th></tr>
+    <tr><td>pixel_wireguard.conf</td><td>user's phone</td><td>172.16.0.5/32</td><td>YOUR_VPS_IP:443</td></tr>
+    <tr><td>legiom_wireguard.conf</td><td>Legiom (this machine)</td><td>172.16.0.6/32</td><td>YOUR_VPS_IP:443</td></tr>
+    <tr><td>mandy_wireguard.conf</td><td>fiancée's iPhone</td><td>172.16.0.3/32</td><td>YOUR_VPS_IP:443</td></tr>
+    <tr><td>RavenOS/Scarab/aaron_phone.conf</td><td>Pixel (alternate)</td><td>172.16.0.5/32</td><td>YOUR_VPS_IP:443</td></tr>
+  </table>
+
+  <p><strong>Server public key:</strong> <code>YOUR_SERVER_PUBKEY</code></p>
+  <p>All configs: <code>PersistentKeepalive = 25</code>, <code>DNS = 192.168.1.5</code></p>
+
+  <h3>PHONE HOTSPOT TUNNEL SHARING</h3>
+  <p>When user's phone runs WireGuard and creates a hotspot, devices on that hotspot share the tunnel automatically — connecting to Duat via VPN without needing their own WireGuard install. The phone becomes a relay for tethered devices.</p>
+
+  <h3>TUNNEL IP MAP</h3>
+  <table>
+    <tr><th>IP</th><th>Device</th></tr>
+    <tr><td>172.16.0.2</td><td>Scarab (travel router)</td></tr>
+    <tr><td>172.16.0.3</td><td>fiancée's iPhone</td></tr>
+    <tr><td>172.16.0.5</td><td>user's phone</td></tr>
+    <tr><td>172.16.0.6</td><td>Legiom</td></tr>
+  </table>
+
+  <h3>STATUS &amp; PENDING</h3>
+  <ul class="checklist">
+    <li><span class="check-done">✓</span> Hetzner VPS running at YOUR_VPS_IP</li>
+    <li><span class="check-done">✓</span> All 4 client configs generated and on Desktop</li>
+    <li><span class="check-pend">✗</span> Netgear port forward — change "WireGuard" rule from TCP → UDP (port 51820) in router admin</li>
+    <li><span class="check-pend">✗</span> DDNS crontab on Duat — <code>YOUR_DDNS_DOMAIN</code> must update to VPS IP</li>
+    <li><span class="check-pend">✗</span> Legiom Private network — run <code>Set-NetConnectionProfile -Name "YourNetworkName" -NetworkCategory Private</code></li>
+  </ul>
+
+  <h3>DIAGNOSTICS</h3>
+  <pre>sudo wg show
+sudo wg show wg0 latest-handshakes    # handshake within 3 min = alive
+sudo wg-quick down wg0 && sudo wg-quick up wg0   # restart
+nslookup YOUR_DDNS_DOMAIN            # must resolve to YOUR_VPS_IP</pre>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <h2>SERVICES & PORTS</h2>
+  <table>
+    <tr><th>Port</th><th>Proto</th><th>Service</th><th>Host</th><th>Commands</th></tr>
+    <tr><td class="port-duat">5000</td><td>TCP</td><td>Gates of Darkness game server</td><td>Duat</td><td><code>sudo systemctl restart raven-slasher</code></td></tr>
+    <tr><td class="port-duat">6174</td><td>TCP</td><td>Hash DB API</td><td>Duat</td><td><code>sudo systemctl restart duat-hashdb</code></td></tr>
+    <tr><td class="port-raven">6175</td><td>TCP</td><td>Raven Unlock API</td><td>Raven</td><td>Started by raven_deck.py</td></tr>
+    <tr><td class="port-duat">6176</td><td>TCP</td><td>Duat Unlock Service</td><td>Duat</td><td><code>sudo systemctl restart duat-unlock</code></td></tr>
+    <tr><td class="port-legiom">6177</td><td>TCP</td><td>Watchdog Unlock Listener</td><td>Legiom</td><td>Built into watchdog_windows.py</td></tr>
+    <tr><td class="port-raven">7743</td><td>UDP</td><td>Heartbeat listener</td><td>Raven</td><td>Built into raven_deck.py</td></tr>
+    <tr><td class="port-duat">7744</td><td>TCP</td><td>Ring biometric API</td><td>Duat</td><td><code>sudo systemctl restart raven-ring</code></td></tr>
+    <tr><td class="port-legiom">7744</td><td>UDP</td><td>Scarab heartbeat listener</td><td>Legiom</td><td>Built into watchdog_windows.py</td></tr>
+    <tr><td class="port-legiom">8080</td><td>TCP</td><td>BitNet LLM chat</td><td>Legiom</td><td>start_chat.bat (localhost only)</td></tr>
+    <tr><td>22</td><td>TCP</td><td>SSH</td><td>All nodes</td><td>—</td></tr>
+    <tr><td class="port-vps">51820</td><td>UDP</td><td>WireGuard</td><td>VPS + Duat</td><td>Router: port forward must be UDP (not TCP)</td></tr>
+    <tr><td>443</td><td>UDP</td><td>WireGuard (disguised)</td><td>VPS</td><td>VPS endpoint port — bypasses firewalls</td></tr>
+  </table>
+
+  <h3>HEALTH CHECKS</h3>
+  <pre>curl http://192.168.1.5:6174/health     # Hash DB
+curl http://192.168.1.5:6174/stats
+curl http://192.168.1.5:6176/health     # Unlock service
+curl http://192.168.1.5:7744/status     # Ring service
+curl http://192.168.1.5:7744/biometrics/latest
+curl http://192.168.1.5:5000            # Gates of Darkness
+curl http://192.168.1.5:5000/api/ladder # Leaderboard JSON</pre>
+
+  <h3>DEPLOY GAME SERVER</h3>
+  <pre>scp C:/Users/YourUser/Desktop/app.py duat@192.168.1.5:/opt/raven-slasher/app.py
+scp C:/Users/YourUser/Desktop/ladder_slasher.html duat@192.168.1.5:/opt/raven-slasher/ladder_slasher.html
+ssh duat@192.168.1.5 "sudo systemctl restart raven-slasher"</pre>
+</section>
+
+<!-- PIHOLE -->
+<section id="pihole">
+  <h2>PI-HOLE — NETWORK DNS SINKHOLE</h2>
+  <p>Pi-hole runs on Duat (Pi 5), serving as the DNS resolver for all LAN clients. All WireGuard clients also use Pi-hole DNS (<code>192.168.1.5</code>) — they get ad blocking regardless of where they are. Future deployment.</p>
+
+  <div class="callout">All LAN clients and all WireGuard clients point to <code>192.168.1.5</code> as DNS. WireGuard configs already have this baked in.</div>
+
+  <div class="cards">
+    <div class="card duat">
+      <h3 style="color:var(--gold);margin-top:0;">SERVICE DETAILS</h3>
+      <div class="spec"><span class="spec-k">Host</span><span class="spec-v">Duat — Pi 5 · 192.168.1.5</span></div>
+      <div class="spec"><span class="spec-k">DNS port</span><span class="spec-v">53 TCP/UDP</span></div>
+      <div class="spec"><span class="spec-k">Web admin</span><span class="spec-v">http://192.168.1.5/admin</span></div>
+      <div class="spec"><span class="spec-k">Status</span><span class="spec-v">Future — not yet deployed</span></div>
+    </div>
+    <div class="card duat">
+      <h3 style="color:var(--gold);margin-top:0;">CONFIGURATION</h3>
+      <div class="spec"><span class="spec-k">Upstream DNS</span><span class="spec-v">1.1.1.1 or 9.9.9.9 (no Google)</span></div>
+      <div class="spec"><span class="spec-k">Local DNS</span><span class="spec-v">duat.local · raven.local · legiom.local</span></div>
+      <div class="spec"><span class="spec-k">WG clients</span><span class="spec-v">All point to 192.168.1.5 already</span></div>
+    </div>
+  </div>
+
+  <h3>MANAGEMENT</h3>
+  <pre>pihole status              # check running + blocking
+pihole -t                  # tail query log live
+pihole restartdns           # restart resolver
+pihole -g                  # update gravity (blocklists)
+pihole disable 5m          # temp disable</pre>
+
+  <div class="callout red">Always set secondary DNS to 1.1.1.1 in router DHCP. If Pi-hole goes down and no secondary is set, all LAN clients lose internet.</div>
+</section>
+
+<!-- SSH -->
+<section id="ssh">
+  <h2>SSH ARCHITECTURE</h2>
+  <table>
+    <tr><th>From</th><th>To</th><th>Key</th><th>Purpose</th></tr>
+    <tr><td>Raven</td><td>YourUser@Legiom</td><td>/home/raven/.ssh/pc_access_key</td><td>Remote Downloads scan</td></tr>
+    <tr><td>Duat</td><td>YourUser@Legiom</td><td>/home/duat/.ssh/duat_horus_key</td><td>Lock/unlock files (icacls)</td></tr>
+    <tr><td>YourUser</td><td>raven@Raven</td><td>C:\Users\YourUser\.ssh\</td><td>Deploy + manage Raven</td></tr>
+    <tr><td>YourUser</td><td>duat@Duat</td><td>C:\Users\YourUser\.ssh\</td><td>Deploy + manage Duat</td></tr>
+  </table>
+
+  <div class="callout red">YourUser is a Windows Administrator account. Windows OpenSSH ignores per-user authorized_keys for admin accounts. Use the administrators_authorized_keys path only.</div>
+
+  <h3>LEGIOM AUTHORIZED KEYS</h3>
+  <p>Location: <code>C:\ProgramData\ssh\administrators_authorized_keys</code></p>
+  <p>Permissions: <code>NT AUTHORITY\SYSTEM:F</code> and <code>BUILTIN\Administrators:F</code> only — OpenSSH enforces this strictly. Any extra ACL entry breaks auth.</p>
+  <p>Contains: raven-os-remote-access · duat@duat · duat@duat-rotated · scarab@scarab-rotated · raven@raven-rotated</p>
+
+  <h3>SSHD_CONFIG</h3>
+  <pre># C:\ProgramData\ssh\sshd_config — must contain (uncommented):
+AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys</pre>
+
+  <h3>FIREWALL</h3>
+  <pre># Run once in elevated PowerShell:
+Set-NetConnectionProfile -Name "YourNetworkName" -NetworkCategory Private</pre>
+</section>
+
+<!-- SECURITY FLOW -->
+<section id="security">
+  <h2>FILE LOCK / UNLOCK FLOW</h2>
+  <div class="flow">
+    <div class="step">1. File lands in Downloads (Legiom)</div>
+    <div class="arrow">   ↓</div>
+    <div class="step">2. Watchdog detects via folder watcher → SHA256 hash</div>
+    <div class="arrow">   ↓</div>
+    <div class="step">3. GET https://192.168.1.5:6174/lookup/:sha256</div>
+    <div class="arrow">   ↓  SQLite hit → verdict · Cache miss → CIRCL hashlookup · Unknown → submit to MalwareBazaar anonymously</div>
+    <div class="step">4. Verdict returned</div>
+    <div class="arrow">   ├── CLEAN → file allowed, no action</div>
+    <div class="arrow">   └── MALICIOUS ↓</div>
+    <div class="action">5. POST lock request → Duat :6176</div>
+    <div class="arrow">   ↓</div>
+    <div class="action">6. Duat SSHes as YourUser@Legiom → icacls /deny YourUser:RX</div>
+    <div class="arrow">   ↓</div>
+    <div class="action">7. Duat forwards alert → POST Raven :6175</div>
+    <div class="arrow">   ↓</div>
+    <div class="result">8. Raven e-ink: THREAT DETECTED · tap to dismiss → UNLOCK QUEUE</div>
+    <div class="arrow">   ↓  Navigate: Menu → Unlock Queue → Select file → UNLOCK CONFIRM</div>
+    <div class="step">9. Tap UNLOCK (left) or DENY (right)</div>
+    <div class="arrow">   ↓</div>
+    <div class="action">10. Raven POSTs decision → Duat :6176</div>
+    <div class="arrow">    ↓</div>
+    <div class="result">11. UNLOCK: Duat SSHes → icacls /grant YourUser:F → file accessible</div>
+    <div class="result">    DENY:   File remains locked on disk</div>
+  </div>
+
+  <div class="callout">Watchdog also listens on port 6177 for direct unlock instructions. Local icacls lock/unlock via <code>icacls /deny</code> and <code>icacls /remove:d + /grant</code>.</div>
+</section>
+
+<!-- WATCHDOG -->
+<section id="watchdog">
+  <h2>WATCHDOG GUI — LEGIOM</h2>
+  <p>File: <code>watchdog_windows.py</code> — Tkinter GUI. Config: <code>%APPDATA%\RavenOS\watchdog_config.json</code></p>
+
+  <h3>BACKGROUND THREADS (always running)</h3>
+  <table>
+    <tr><th>Thread</th><th>Behavior</th></tr>
+    <tr><td>Heartbeat loop</td><td>UDP <code>WATCHDOG|Legiom|YourUser|ALIVE</code> → Raven :7743 every 30s</td></tr>
+    <tr><td>Scarab listener</td><td>UDP port 7744 — receives Scarab heartbeat packets</td></tr>
+    <tr><td>Unlock listener</td><td>HTTP port 6177 — receives /unlock and /unlock_decision</td></tr>
+    <tr><td>Process monitor</td><td>60-second scan via <code>process_monitor</code> module (requires psutil)</td></tr>
+    <tr><td>Status loop</td><td>Polls Duat/Raven health every 30s</td></tr>
+    <tr><td>Slasher loop</td><td>Polls /api/ladder every 15s for SLASHER tab</td></tr>
+  </table>
+
+  <h3>CONFIG VALUES</h3>
+  <table>
+    <tr><th>Setting</th><th>Default</th></tr>
+    <tr><td>downloads_path</td><td>C:\Users\YourUser\Downloads</td></tr>
+    <tr><td>duat_ip</td><td>192.168.1.5</td></tr>
+    <tr><td>duat_port (Hash DB)</td><td>6174</td></tr>
+    <tr><td>duat_unlock_port</td><td>6176</td></tr>
+    <tr><td>raven_ip</td><td>192.168.1.3</td></tr>
+    <tr><td>raven_port</td><td>6175</td></tr>
+    <tr><td>raven_heartbeat_port</td><td>7743</td></tr>
+  </table>
+
+  <h3>TAB: MONITOR</h3>
+  <p>Core security panel. Folder watcher (watchdog library) detects new files in Downloads. SHA256 hash → queries Duat Hash DB over HTTPS. Shows: files scanned / threats / unknown / locked. Scrollable event log with verdicts. Suspicious extensions flagged: <code>.exe .bat .cmd .ps1 .vbs .js .msi .dll .scr .pif .com .jar .hta .wsf .reg .inf</code>.</p>
+
+  <h3>TAB: SLASHER</h3>
+  <p>Header: <strong>"GATES OF DARKNESS"</strong>. Live leaderboard from Duat port 5000. 🎮 PLAY button opens <code>http://192.168.1.5:5000</code>. Columns: rank · player · level · floor · kills · class · name. Auto-refresh every 15s. Rank badges: ★ top 3 · ◆ top 10 · ◉ rest.</p>
+
+  <h3>TAB: REGISTRY</h3>
+  <p>Network Key Registry. 5 node selector buttons (RAVEN · DUAT · LEGIOM · SCARAB · ANUBIS). Per-node: connection config panel (IP/port/role) and public key panel (add/remove SSH keys). Trusted/Pending counts in header. Persisted to <code>%APPDATA%\RavenOS\registry.json</code>.</p>
+
+  <h3>TAB: OPS</h3>
+  <p>OPS Console. QUICK SCAN button fires all 8 checks in parallel. Each row: subsystem name · status dot (●) · STATUS label · LAST CHECK timestamp · individual CHECK button. Subsystems monitored:</p>
+  <table>
+    <tr><th>Subsystem</th><th>Check Method</th></tr>
+    <tr><td>WireGuard Tunnel</td><td>SSH → <code>sudo wg show interfaces</code></td></tr>
+    <tr><td>DDNS</td><td>SSH → <code>crontab -l | grep no-ip</code></td></tr>
+    <tr><td>Heartbeat System</td><td>UDP ping to Duat :7744</td></tr>
+    <tr><td>SSH Key Auth</td><td>BatchMode SSH to each node</td></tr>
+    <tr><td>Pi-hole DNS</td><td>SSH → <code>pihole status</code></td></tr>
+    <tr><td>Watchdog GUI</td><td>Self-check (always passes)</td></tr>
+    <tr><td>Duat Game Server</td><td>HTTP GET /api/ladder</td></tr>
+    <tr><td>Remote Control Chain</td><td>Manual user-verified</td></tr>
+  </table>
+
+  <h3>TAB: SETTINGS</h3>
+  <p>Downloads Folder path · Duat IP / Hash DB Port / Unlock Port · Raven IP / Port · Checkboxes: Enable hash DB lookups / Auto-lock threats / Start watching on launch. TEST CONNECTIONS button. SAVE button.</p>
+</section>
+
+<!-- RAVEN OS -->
+<section id="raven-os">
+  <h2>RAVEN OS — E-INK MENU</h2>
+  <div class="callout blue">Touch controls: Left tap = cycle/action · Right tap = select/back · Main screen left tap = inject test unlock alert</div>
+  <pre>MAIN
+└── MENU
+    ├── 1.  LAN PING SWEEP      — nmap ping scan 192.168.1.0/24
+    ├── 2.  VIEW LAN INTEL      — discovered nodes + open ports
+    ├── 3.  AUTO-AUDIT LAN      — port scan all live hosts
+    ├── 4.  BLUETOOTH           — BLE scan, nearby devices
+    ├── 5.  WIFI APs            — scan SSIDs + signal strength
+    ├── 6.  SYS HEALTH          — CPU temp, mem, disk, uptime
+    ├── 7.  VIEW LOGS           — tail raven logs, scrolling
+    ├── 8.  REMOTE SCAN PC      — SSH to Legiom, scan Downloads
+    ├── 9.  UNLOCK QUEUE        — pending lock alerts, tap to resolve
+    ├── 10. SHUT DOWN           — sudo shutdown -h now
+    └── &lt;- BACK TO MAIN</pre>
+
+  <h3>HEARTBEAT PROTOCOL</h3>
+  <p>Watchdog sends <code>WATCHDOG|Legiom|YourUser|ALIVE</code> UDP to Raven :7743 every 30 seconds. Raven listens and updates display status. Timeout &gt; 90s → LEGIOM OFFLINE alert on e-ink.</p>
+</section>
+
+<!-- SCARAB -->
+<section id="scarab">
+  <h2>SCARAB — HEADLESS DUNGEON AGENT</h2>
+  <p>Scarab runs <code>scarab_agent.py</code> as a headless pet AI. State persisted at <code>/tmp/scarab_pet_state.json</code>. Displays combat status on Waveshare 2.13" e-ink.</p>
+
+  <h3>AGENT LOOP</h3>
+  <div class="flow">
+    <div class="step">Main loop — tick every 5s</div>
+    <div class="arrow">├── Post heartbeat every 5 min (→ Duat :5000 /api/pets/heartbeat)</div>
+    <div class="arrow">└── Fight loop:</div>
+    <div class="step">   Roll hit · pet ATK vs mon DEF → damage</div>
+    <div class="arrow">   ├── Monster dies → XP + gold + loot · sync to Duat</div>
+    <div class="arrow">   └── Pet dies → consecutive_deaths++</div>
+    <div class="step">              ├── deaths ≥ 2 AND floor &gt; 1 → RETREAT: floor−1, deaths reset</div>
+    <div class="step">              └── otherwise → respawn floor 1 at 60% HP</div>
+  </div>
+
+  <h3>WIREGUARD — MANDY'S VPN</h3>
+  <p>Scarab acts as fiancée's travel router. Config generated (<code>mandy_wireguard.conf</code>), QR code ready. <strong>Blocked:</strong> Netgear port forward must be TCP → UDP. iPhone "Maximize Compatibility" must be ON to force 2.4 GHz (Pi Zero 2 W is 2.4 GHz only).</p>
+
+  <h3>GAME PET BONUS</h3>
+  <p>When Scarab is online (heartbeat active on Duat): +20% gold on all kills. Combined with Raven online: +8% XP bonus.</p>
+</section>
+
+<!-- OPS -->
+<section id="ops">
+  <h2>OPS — WATCHDOG SUBSYSTEM HEALTH</h2>
+  <p>The OPS tab provides a live health dashboard. QUICK SCAN fires all 8 checks in parallel threads, updating status dots without blocking the UI.</p>
+
+  <h3>TRIAGE WORKFLOW</h3>
+  <div class="flow">
+    <div class="step">1. Run Quick Scan — all 8 section checks fire in parallel</div>
+    <div class="arrow">   ↓</div>
+    <div class="step">2. Failure found on a section</div>
+    <div class="arrow">   ↓  Go to that section's individual CHECK button</div>
+    <div class="step">3. Individual check fails → escalate to full diagnostic</div>
+    <div class="warn">4. All checks pass but system still broken?</div>
+    <div class="arrow">   ↓  Check Ledger Sync — verify Duat has the current MD</div>
+    <div class="result">   PUSH TO ALL → re-verify → recheck</div>
+  </div>
+
+  <h3>LAST KNOWN GOOD STATE</h3>
+  <p>Stored at: <code>%APPDATA%\RavenOS\ops_last_good.json</code> — snapshot of last passing state. MARK GOOD button saves current state as baseline.</p>
+</section>
+
+<!-- RING -->
+<section id="ring">
+  <h2>RING SERVICE — COLMI R02</h2>
+  <p>Daemon: <code>raven_ring.py</code> on Duat. BLE address: <code>XX:XX:XX:XX:XX:XX</code> (device name <code>YOUR_RING_NAME</code>). worn on the right hand.</p>
+
+  <h3>API ENDPOINTS</h3>
+  <table>
+    <tr><th>Endpoint</th><th>Returns</th></tr>
+    <tr><td>/status</td><td>Ring connected, battery, last seen</td></tr>
+    <tr><td>/biometrics/latest</td><td>HR, SpO2, steps</td></tr>
+    <tr><td>/baseline</td><td>Rolling baseline + confidence score</td></tr>
+    <tr><td>/gesture</td><td>Last detected gesture (Iron House context only)</td></tr>
+  </table>
+
+  <h3>DEPLOY</h3>
+  <pre>scp raven_ring.py raven_ring.service duat@192.168.1.5:/home/raven/
+ssh duat@192.168.1.5 "sudo cp /home/raven/raven_ring.service /etc/systemd/system/ && sudo systemctl enable --now raven-ring"
+pip install colmi-r02-client --break-system-packages
+python3 raven_ring.py --test-gestures  # gesture calibration</pre>
+
+  <div class="callout">Confidence score = personal readiness indicator, not a system gate. Gesture detection only fires in Iron House editing context. Hook left for second ring (fiancée, left hand) — not built yet.</div>
+</section>
+
+<!-- GAME -->
+<section id="game">
+  <h2>GATES OF DARKNESS</h2>
+  <p>Egyptian-themed dungeon crawler. Server: <code>app.py</code> (Flask + SQLite, WAL mode) on Duat port 5000. Client: <code>ladder_slasher.html</code> served by Flask. Play at <code>http://192.168.1.5:5000</code>. DB: <code>/opt/raven-slasher/ladder_slasher.db</code>.</p>
+
+  <h3>CLASSES (8 — all verified in code)</h3>
+  <table>
+    <tr><th>Key</th><th>Lore Name</th><th>Primary</th><th>Passive</th></tr>
+    <tr><td>fighter</td><td>Medjay 🗡️</td><td>STR · VIT</td><td>Counter-Strike: 25% chance to deal 40% dmg back when hit</td></tr>
+    <tr><td>barbarian</td><td>Kushite 🪓</td><td>STR</td><td>Bloodlust: +8% dmg per hit taken (max 5 stacks), unleash on next attack</td></tr>
+    <tr><td>rogue</td><td>Shaduf 🥷</td><td>DEX</td><td>Ambush: first strike vs each new enemy = guaranteed crit</td></tr>
+    <tr><td>mage</td><td>Sem Priest 🔮</td><td>INT</td><td>Arcane Body: all damage scales INT, skills ignore 50% armor</td></tr>
+    <tr><td>ranger</td><td>Nubian Archer 🏹</td><td>DEX</td><td>Keen Eye: always acts first, first hit each fight = guaranteed crit</td></tr>
+    <tr><td>samurai</td><td>Shardana ⚔️</td><td>STR · DEX</td><td>Death Blow: 2× damage when enemy HP &lt; 30%</td></tr>
+    <tr><td>cleric</td><td>Heka ✨</td><td>INT · VIT</td><td>Divine Light: healing skills +20% HP restored, holy damage ignores 30% armor</td></tr>
+    <tr><td>paladin</td><td>Tjaty ⚜️</td><td>STR · VIT</td><td>Bulwark: 15% less damage taken; heals grant a shield (10% of heal amount)</td></tr>
+  </table>
+
+  <h3>SKILLS PER CLASS (all verified in ladder_slasher.html)</h3>
+  <table>
+    <tr><th>Class</th><th>L1</th><th>L5</th><th>L10</th><th>L15</th></tr>
+    <tr><td>Medjay</td><td>Iron Strike (150% STR)</td><td>War Cry (−25% enemy ATK)</td><td>Shield Bash (stun + 80%)</td><td>Last Stand (200%, heal if &lt;30%)</td></tr>
+    <tr><td>Kushite</td><td>Rampage (180% STR)</td><td>Berserker's Howl (+40% ATK)</td><td>Cleave (2× 90%)</td><td>Primal Rage (300%, costs 10% HP)</td></tr>
+    <tr><td>Shaduf</td><td>Serpent Strike (220% DEX)</td><td>Hemorrhage (5% HP/turn)</td><td>Shadow Step (dodge + counter)</td><td>Death Mark (3× if &lt;40%)</td></tr>
+    <tr><td>Sem Priest</td><td>Sekhmet's Wrath (INT×3)</td><td>Frost Chains (−40% ATK)</td><td>Soul Drain (INT×2 + MP)</td><td>Wrath of Ra (INT×6 AOE)</td></tr>
+    <tr><td>Nubian Archer</td><td>Arrow Storm (DEX×1.6)</td><td>Piercing Shot (DEX×2, armor)</td><td>Rain of Arrows (3× 70%)</td><td>Eagle Eye (guaranteed crit 250%)</td></tr>
+    <tr><td>Shardana</td><td>Dual Onslaught (2.5× total)</td><td>Blade Flash (120%, CD1)</td><td>Iaijutsu (300%)</td><td>Void Cut (25% current HP)</td></tr>
+    <tr><td>Heka</td><td>Searing Light (INT×2.5 holy)</td><td>Mend Wounds (heal 30% HP)</td><td>Purifying Flame (AOE + heal 10%)</td><td>Breath of Osiris (heal 60% + 3-hit shield)</td></tr>
+    <tr><td>Tjaty</td><td>Smite (160% STR holy)</td><td>Lay on Hands (heal 20% + shield)</td><td>Holy Shield (−40% dmg, 3 hits)</td><td>Judgment (massive holy, heal 50% dmg)</td></tr>
+  </table>
+
+  <h3>EQUIPMENT SLOTS (8)</h3>
+  <p><code>weapon</code> · <code>armor</code> · <code>helmet</code> · <code>ring</code> · <code>belt</code> · <code>boots</code> · <code>gloves</code> · <code>amulet</code></p>
+
+  <h3>RARITY TIERS (6 — all verified in code)</h3>
+  <table>
+    <tr><th>Tier</th><th>Color</th><th>Notes</th></tr>
+    <tr><td><span class="r-common">Common</span></td><td>Gray</td><td>Basic stats, single slot</td></tr>
+    <tr><td><span class="r-uncommon">Uncommon</span></td><td>Blue</td><td>Better stats, some secondaries</td></tr>
+    <tr><td><span class="r-rare">Rare</span></td><td>Purple</td><td>Multi-stat gear</td></tr>
+    <tr><td><span class="r-unique">Unique</span></td><td>Gold</td><td>Named items, floor-scaled random stats via <code>generate_unique(floor)</code>, special effects</td></tr>
+    <tr><td><span class="r-legendary">Legendary</span></td><td>Orange</td><td>64 items total (8 per class), fixed stats, level req 15, untradeable, class affinity, passive enhancement effects</td></tr>
+    <tr><td><span class="r-raid">Raid</span></td><td>Red</td><td>64 items (8 per class), drop from raid bosses only, <code>tradeable:False</code>, stronger than Legendary, on-hit procs</td></tr>
+  </table>
+
+  <h3>STATUS EFFECTS (5 — all verified in monster pool)</h3>
+  <table>
+    <tr><th>Effect</th><th>Applied By</th></tr>
+    <tr><td>poison</td><td>Sand Viper, Cobra Guardian, Scorpion Swarm, Plague Locust, Son of Apophis, various raid items</td></tr>
+    <tr><td>bleed</td><td>Tomb Spider, Abyssal Scorpion, various raid weapons</td></tr>
+    <tr><td>burn</td><td>Deshret Demon, Chaos Elemental, Ra's Fury, Chaos God Fragment, various raid items</td></tr>
+    <tr><td>frostbite</td><td>Thoth's Riddle, Staff of the First Word (raid weapon)</td></tr>
+    <tr><td>curse</td><td>Cursed Scribe, Soul Eater, Nephthys Shade, Eternal Wraith, The Unnamed God, various raid items</td></tr>
+  </table>
+
+  <h3>LIFE STEAL / MANA STEAL (verified in Unique items)</h3>
+  <p>Life steal: <strong>Blade of the Dusk</strong> — "heal 8% of damage dealt on each hit" · Mana steal: <strong>Staff of Set's Gale</strong> — "Restore 5 MP on every kill"</p>
+
+  <h3>TRADE SYSTEM (verified — fully implemented)</h3>
+  <p>In-session co-op trade between two players. Server-side with offer/accept/cancel flow.</p>
+  <pre>GET  /api/sessions/&lt;sid&gt;/trade         — view current offers
+POST /api/sessions/&lt;sid&gt;/trade/offer   — place offer
+POST /api/sessions/&lt;sid&gt;/trade/accept  — accept offer
+POST /api/sessions/&lt;sid&gt;/trade/cancel  — cancel offer</pre>
+
+  <h3>ROOM TYPES (verified in dungeon generator)</h3>
+  <table>
+    <tr><th>Type</th><th>Description</th></tr>
+    <tr><td>enemy</td><td>Monster + loot on kill</td></tr>
+    <tr><td>loot</td><td>Guaranteed item drop</td></tr>
+    <tr><td>trap</td><td>DEX-based disarm. Disarm=loot, spring=damage+no loot, skip=safe</td></tr>
+    <tr><td>shrine</td><td>Spend gold for HP or MP restoration (scales with floor)</td></tr>
+    <tr><td>merchant</td><td>Sells Rejuvenation Potions (35% HP + 35% MP)</td></tr>
+    <tr><td>empty</td><td>May have rest point (12.5% roll on first entry)</td></tr>
+    <tr><td>boss</td><td>Furthest from start, drops Rare+ loot, unlocks stairs on death</td></tr>
+    <tr><td>stairs</td><td>Locked until boss dies, descend to next floor</td></tr>
+    <tr><td>roulette</td><td>Gamble room — verified in generator + <code>/api/sessions/&lt;sid&gt;/roulette</code></td></tr>
+    <tr><td>raid_boss</td><td>Special boss room on raid floors — triggers full raid encounter</td></tr>
+  </table>
+
+  <h3>PETS SYSTEM (verified — full implementation)</h3>
+  <p>DB tables: <code>pets</code>, <code>pet_bindings</code>. Pets register via device IP (Scarab), have class/icon/stats/level/XP. Characters claim pets with PIN. Pets deliver loot, send heartbeats, participate in dungeon play sessions.</p>
+  <pre>GET  /api/pets/bound           — pets bound to character
+GET  /api/pets/status          — all pet statuses
+POST /api/pets/claim           — claim pet by PIN
+POST /api/pets/unbind          — unbind from character
+GET  /api/pets/bindings        — all bindings
+POST /api/pets/deliver         — deliver pending loot
+POST /api/pets/heartbeat       — heartbeat + state sync
+GET  /api/pets/active_heroes   — heroes active in last N min
+POST /api/pets/play/sync       — pet play session sync</pre>
+
+  <h3>RAID SYSTEM (verified — 3 bosses, multi-phase)</h3>
+  <table>
+    <tr><th>Boss</th><th>Difficulty</th><th>HP/Player</th><th>Phase Mechanics</th></tr>
+    <tr><td>Warden of the Gates ⚖️</td><td>3</td><td>700</td><td>Gate Stance → Judgment (mark) → Shadow Split (adds) → Frenzy</td></tr>
+    <tr><td>Apophis the Devourer 🐍</td><td>4</td><td>1000</td><td>Coiling → Venom Surge (poison pool) → Devour → Chaos Unbound (shield)</td></tr>
+    <tr><td>The Pharaoh Ascendant 👑</td><td>5</td><td>1400</td><td>Divine Reign → Plague of Gods → Wrath and Ruin (adds DPS check) → Rebirth</td></tr>
+  </table>
+  <pre>POST /api/raids                  — create lobby
+GET  /api/raids/open             — list open raids
+POST /api/raids/&lt;rid&gt;/join       — join raid
+GET  /api/raids/&lt;rid&gt;            — poll state
+POST /api/raids/&lt;rid&gt;/ready      — mark ready
+POST /api/raids/&lt;rid&gt;/start      — start (host only)
+POST /api/raids/&lt;rid&gt;/attack     — attack action
+POST /api/raids/&lt;rid&gt;/attack_add — attack adds/mechanic
+POST /api/raids/&lt;rid&gt;/leave      — leave raid</pre>
+
+  <h3>MONSTER ROSTER (by floor tier — verified)</h3>
+  <table>
+    <tr><th>Tier</th><th>Floors</th><th>Zone</th><th>Notable Examples</th></tr>
+    <tr><td>1</td><td>1–5</td><td>Tomb Entrance</td><td>Tomb Scarab, Desert Rat, Sand Viper (poison), Grave Robber, Clay Golem</td></tr>
+    <tr><td>2</td><td>6–10</td><td>Catacombs</td><td>Mummified Priest, Cursed Scribe (curse), Bone Stalker, Tomb Spider (bleed)</td></tr>
+    <tr><td>3</td><td>11–15</td><td>Underworld Gates</td><td>Ammit Spawn, Deshret Demon (burn), Soul Eater (curse), Obsidian Golem</td></tr>
+    <tr><td>4</td><td>16–20</td><td>Duat Depths</td><td>Apep Serpent (poison), Set Beast, War Sphinx, Chaos Elemental (burn)</td></tr>
+    <tr><td>5</td><td>21–25</td><td>Divine Realm</td><td>Son of Apophis, Ra's Fury (burn), Sekhmet Avatar, Anubis Judge</td></tr>
+    <tr><td>6</td><td>26+</td><td>Infinite Abyss</td><td>Mythic variants — Void Osiris, Duat Titan, The Unnamed God (curse)</td></tr>
+  </table>
+
+  <h3>COMBAT CONTROLS</h3>
+  <p><code>Space</code> = Attack · <code>1/2/3/4</code> = Skills · <code>F</code> = Flee · <code>H</code> = Potion · <code>W/A/S/D</code> / arrows = Move · <code>R</code> = Rest</p>
+
+  <h3>MOBILE</h3>
+  <p>Swipe zones: <code>.sz-left</code> and <code>.sz-right</code> fixed to bottom of screen, full-width (50% each) on mobile. All game screens responsive via CSS media queries. Game title element in HTML: <code>Gates of Darkness</code>.</p>
+
+  <h3>CO-OP / SPECTATE / CHAT (verified)</h3>
+  <p>Co-op: 2 players, server-authoritative dungeon, same map, boss HP scales, polls every 2.5s. Spectate any online player → 5×5 minimap + event log (2.5s poll). Global chat: 💬 toggle, all screens, polls every 5s, 200 char limit.</p>
+
+  <h3>ALL API ENDPOINTS</h3>
+  <pre>POST /api/register · POST /api/login · GET /api/users
+GET/POST /api/characters · PUT /api/characters/&lt;cid&gt; · POST /api/characters/&lt;cid&gt;/delete
+GET /api/ladder · GET /api/stats · GET /api/online
+GET/POST /api/chat
+POST /api/sessions · GET /api/sessions/open
+GET /api/sessions/&lt;sid&gt; · POST .../move · POST .../sync · POST .../attack
+POST .../loot · POST .../buy · POST .../roulette · POST .../update_player
+POST .../new_floor · POST .../close
+GET/POST/POST/POST /api/sessions/&lt;sid&gt;/trade[/offer|/accept|/cancel]
+[Pets: see Pets section above]
+[Raids: see Raid section above]
+GET /  → ladder_slasher.html</pre>
+
+  <h3>LEADERBOARD</h3>
+  <p>Sorted alive-first, then by floor/kills. Rank badges: ★ top 3 · ◆ top 10 · ◉ rest. SLASHER tab auto-refreshes every 15s.</p>
+</section>
+
+<!-- BITNET -->
+<section id="bitnet">
+  <h2>BITNET — LOCAL AI CHAT</h2>
+  <p>Microsoft's 1.58-bit LLM inference running entirely on CPU on Legiom. No cloud. No API key. Future — installer ZIP ready.</p>
+
+  <div class="cards">
+    <div class="card legiom">
+      <h3 style="color:#88aaff;margin-top:0;">Active Model</h3>
+      <div class="spec"><span class="spec-k">Model</span><span class="spec-v">Falcon3-3B-Instruct-1.58bit</span></div>
+      <div class="spec"><span class="spec-k">Format</span><span class="spec-v">I2_S GGUF · 2.1 GB on disk</span></div>
+      <div class="spec"><span class="spec-k">Speed</span><span class="spec-v">~20 tokens/sec · 8 threads</span></div>
+      <div class="spec"><span class="spec-k">Chat UI</span><span class="spec-v">http://localhost:8080</span></div>
+      <div class="spec"><span class="spec-k">API</span><span class="spec-v">OpenAI-compatible /v1/chat/completions</span></div>
+    </div>
+    <div class="card legiom">
+      <h3 style="color:#88aaff;margin-top:0;">Files</h3>
+      <div class="spec"><span class="spec-k">Launch</span><span class="spec-v">C:\Users\YourUser\BitNet\BitNet\start_chat.bat</span></div>
+      <div class="spec"><span class="spec-k">Model file</span><span class="spec-v">...\models\Falcon3-3B-Instruct-1.58bit\ggml-model-i2_s.gguf</span></div>
+      <div class="spec"><span class="spec-k">Rebuild</span><span class="spec-v">C:\Users\YourUser\Desktop\build_bitnet3.bat</span></div>
+      <div class="spec"><span class="spec-k">Build stack</span><span class="spec-v">clang-cl · CMake · VS 2022 · BITNET_X86_TL2=ON</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BACKLOG -->
+<section id="backlog">
+  <h2>BUILD BACKLOG</h2>
+
+  <h3>RAVEN OS INFRASTRUCTURE</h3>
+  <ul class="checklist">
+    <li><span class="check-done">✓</span> Watchdog GUI — file hashing, lock/unlock, heartbeat, 5 tabs</li>
+    <li><span class="check-done">✓</span> Duat Hash DB — MalwareBazaar + CIRCL + SQLite</li>
+    <li><span class="check-done">✓</span> Duat Unlock Service — SSH broker</li>
+    <li><span class="check-done">✓</span> Raven e-ink OS — 10-item menu, touch input</li>
+    <li><span class="check-done">✓</span> Raven Flask API — unlock queue</li>
+    <li><span class="check-done">✓</span> Scarab dungeon agent — headless pet AI, floor retreat logic</li>
+    <li><span class="check-done">✓</span> Scarab e-ink farming display — combat aura, event log</li>
+    <li><span class="check-done">✓</span> Ring service — COLMI R02 BLE, biometrics, gesture engine</li>
+    <li><span class="check-done">✓</span> OPS tab — subsystem health grid, 8 parallel checks</li>
+    <li><span class="check-done">✓</span> Registry tab — SSH key management per node</li>
+    <li><span class="check-done">✓</span> WireGuard VPN — Hetzner relay, 4 client configs generated</li>
+    <li><span class="check-done">✓</span> BitNet local AI — Falcon 3B instruct on Legiom</li>
+    <li><span class="check-done">✓</span> Legiom SSH firewall — Set-NetConnectionProfile (elevated PowerShell)</li>
+    <li><span class="check-pend">✗</span> WireGuard port forward — change TCP → UDP in Netgear admin</li>
+    <li><span class="check-done">✓</span> MalwareBazaar parser fix — fix_hashdb_parser.sh deployed</li>
+    <li><span class="check-done">✓</span> Raven deck patch — patch_raven_deck.sh deployed</li>
+    <li><span class="check-pend">✗</span> Scarab WiFi — enable "Maximize Compatibility" on iPhone, verify connect</li>
+    <li><span class="check-pend">✗</span> DDNS setup — No-IP crontab on Duat, point YOUR_DDNS_DOMAIN to VPS IP</li>
+    <li><span class="check-pend">✗</span> Pi-hole DNS on Duat</li>
+    <li><span class="check-pend">✗</span> Duat SSH hardening — disable password auth, key-only</li>
+    <li><span class="check-pend">✗</span> Process monitor — pip install psutil on Legiom</li>
+    <li><span class="check-fut">○</span> Anubis — son's guardian node, "hold hands" consent mechanism</li>
+    <li><span class="check-fut">○</span> Fiancée's second COLMI ring (hook in raven_ring.py)</li>
+  </ul>
+
+  <h3>GATES OF DARKNESS GAME BACKLOG</h3>
+  <ul class="checklist">
+    <li><span class="check-done">✓</span> 8 classes — Medjay, Kushite, Shaduf, Sem Priest, Nubian Archer, Shardana, Heka, Tjaty</li>
+    <li><span class="check-done">✓</span> 8 equipment slots (weapon/armor/helmet/ring/belt/boots/gloves/amulet)</li>
+    <li><span class="check-done">✓</span> 6 rarity tiers (Common → Raid)</li>
+    <li><span class="check-done">✓</span> 64 Legendary items (8 per class, class affinity, untradeable)</li>
+    <li><span class="check-done">✓</span> 64 Raid items (8 per class, raid boss drops, untradeable)</li>
+    <li><span class="check-done">✓</span> 3 Raid bosses with multi-phase mechanics</li>
+    <li><span class="check-done">✓</span> 5 status effects (poison/burn/bleed/frostbite/curse)</li>
+    <li><span class="check-done">✓</span> Life steal / mana steal (Unique items)</li>
+    <li><span class="check-done">✓</span> In-session trade system</li>
+    <li><span class="check-done">✓</span> Pet system (pets DB table + bindings, heartbeat, loot delivery)</li>
+    <li><span class="check-done">✓</span> Roulette room type</li>
+    <li><span class="check-done">✓</span> Raid boss room type</li>
+    <li><span class="check-done">✓</span> Mobile swipe zones</li>
+    <li><span class="check-done">✓</span> 6-tier monster roster (floors 1-5 through 26+)</li>
+    <li><span class="check-done">✓</span> Co-op, spectate, global chat</li>
+    <li><span class="check-fut">○</span> Co-op skill sync — server-side skill effects (currently simplified)</li>
+    <li><span class="check-fut">○</span> Sound effects — not yet in client</li>
+    <li><span class="check-fut">○</span> Floor balance review — enemy stats at floors 5+</li>
+    <li><span class="check-fut">○</span> Vault room — locked chest, key from elites</li>
+    <li><span class="check-fut">○</span> Forge room — upgrade equipment</li>
+    <li><span class="check-fut">○</span> Skill tree branching — 2-option choices at each milestone</li>
+    <li><span class="check-fut">○</span> Anubis integration — low HR → harder enemies</li>
+    <li><span class="check-fut">○</span> Second ring (fiancée) → dungeon events</li>
+  </ul>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <h2>PHILOSOPHY & KEY CONCEPTS</h2>
+
+  <h3>SOVEREIGN INFRASTRUCTURE</h3>
+  <p>All data stays local. No third-party cloud. No API keys. No signups. Community feeds (MalwareBazaar) used anonymously. Unknown hashes submitted back anonymously — contributing without identifying. You own the hardware, you own the data.</p>
+
+  <h3>SECURITY BY DESIGN</h3>
+  <p>Authentication, encryption, and input sanitization built in by default — not added on request. Physical confirmation required for file unlock. No remote software bypass. The unlock chain requires a human hand on the device.</p>
+
+  <h3>CONSENT-BASED DESIGN</h3>
+  <p>"They have to hold hands." — The Anubis consent mechanism. Both rings must be physically present simultaneously to establish a monitoring connection. Cannot be initiated remotely. Vitals checked during handshake — if stress detected, connection blocked. Either party can revoke unilaterally. This is the ethical foundation of any future product.</p>
+
+  <h3>SELF-HEALING NETWORK</h3>
+  <p>Scarab detects Duat offline → falls back gracefully → reconnects when Duat returns. Fiancée never notices. Zero friction. The network heals around failures silently.</p>
+
+  <h3>THE RAVEN RING</h3>
+  <p>The COLMI R02 (right hand). Biometrics feed a rolling baseline — confidence score is a personal readiness indicator, not a system gate. Gesture vocabulary isolated: Iron House editing gestures only fire in editing mode. Hook left for fiancée — not built yet.</p>
+
+  <h3>NETWORK REFERENCE</h3>
+  <table>
+    <tr><th>Item</th><th>Value</th></tr>
+    <tr><td>Router</td><td>Netgear Nighthawk R6700</td></tr>
+    <tr><td>Subnet</td><td>192.168.1.0/24</td></tr>
+    <tr><td>Duat</td><td>192.168.1.5 (static)</td></tr>
+    <tr><td>Raven</td><td>192.168.1.3</td></tr>
+    <tr><td>Scarab</td><td>192.168.1.2 LAN / 172.16.0.2 WG</td></tr>
+    <tr><td>Legiom</td><td>192.168.1.6</td></tr>
+    <tr><td>VPS (Hetzner)</td><td>YOUR_VPS_IP</td></tr>
+    <tr><td>WireGuard tunnel</td><td>172.16.0.0/24</td></tr>
+    <tr><td>WG server pubkey</td><td>YOUR_SERVER_PUBKEY</td></tr>
+  </table>
+</section>
+
+</div>
+</body>
+</html>

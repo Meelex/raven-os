@@ -1,0 +1,546 @@
+<!--
+  raven_ring_watchdog_tab.html — Ring Tab for Raven OS Watchdog UI
+  Polls http://192.168.12.231:7744 every 5 seconds.
+
+  To integrate into a tabbed watchdog UI:
+    1. Add a tab button: <button onclick="showTab('ring')">RING</button>
+    2. Drop this file's <div id="ring-tab"> block into your tabs container
+    3. Copy the <style> into your shared stylesheet
+    4. Copy the <script> into your shared JS (or keep it inline here)
+
+  Standalone use: open this file directly in a browser on the local network.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raven Ring — Watchdog</title>
+  <style>
+    :root {
+      --bg:       #0a0a0f;
+      --panel:    #12121a;
+      --border:   #1e1e2e;
+      --green:    #00ff88;
+      --amber:    #ffaa00;
+      --red:      #ff3344;
+      --dim:      #444466;
+      --text:     #ccccdd;
+      --subtext:  #666688;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 20px;
+    }
+
+    h2 {
+      color: var(--green);
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .ring-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+
+    .panel-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--subtext);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .panel-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--green);
+      line-height: 1;
+    }
+
+    .panel-unit {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-top: 4px;
+    }
+
+    /* Status dot */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--dim);
+      transition: background 0.4s;
+    }
+    .dot.online  { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.offline { background: var(--red); }
+
+    .status-text {
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--subtext);
+    }
+    .status-text.online  { color: var(--green); }
+    .status-text.offline { color: var(--red); }
+
+    /* Battery bar */
+    .battery-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .battery-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .battery-bar-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 4px;
+      transition: width 0.5s;
+    }
+    .battery-bar-fill.low  { background: var(--amber); }
+    .battery-bar-fill.crit { background: var(--red); }
+    .battery-pct {
+      font-size: 12px;
+      color: var(--subtext);
+      min-width: 34px;
+      text-align: right;
+    }
+
+    /* Confidence bar */
+    .confidence-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .confidence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .confidence-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--subtext);
+      text-transform: uppercase;
+    }
+    .confidence-value {
+      font-size: 20px;
+      color: var(--green);
+      font-weight: bold;
+    }
+    .confidence-desc {
+      font-size: 10px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+    .confidence-bar-bg {
+      height: 10px;
+      background: var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .confidence-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, #00aaff, var(--green));
+      border-radius: 5px;
+      transition: width 0.8s ease;
+    }
+
+    /* Gesture section */
+    .gesture-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .gesture-name {
+      font-size: 18px;
+      color: var(--amber);
+      font-weight: bold;
+      margin: 4px 0;
+      min-height: 24px;
+    }
+    .gesture-ts {
+      font-size: 10px;
+      color: var(--subtext);
+    }
+    .gesture-mode-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .mode-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--subtext);
+      text-transform: uppercase;
+    }
+    .mode-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .mode-badge.editing { background: #1a2a1a; color: var(--green); border: 1px solid var(--green); }
+    .mode-badge.off     { background: #1a1a1a; color: var(--dim);   border: 1px solid var(--dim);   }
+
+    .toggle-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 14px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .toggle-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* HR chart */
+    .chart-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .chart-section svg {
+      width: 100%;
+      height: 120px;
+      display: block;
+    }
+    .chart-empty {
+      text-align: center;
+      color: var(--subtext);
+      font-size: 11px;
+      padding: 40px 0;
+    }
+
+    .last-updated {
+      font-size: 10px;
+      color: var(--subtext);
+      text-align: right;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="ring-tab">
+  <h2>&#9670; Ring Status</h2>
+
+  <!-- Connection status -->
+  <div class="status-row">
+    <div class="dot" id="ring-dot"></div>
+    <span class="status-text" id="ring-status-text">CONNECTING...</span>
+  </div>
+
+  <!-- Biometric panels -->
+  <div class="ring-grid">
+    <div class="panel">
+      <div class="panel-label">Heart Rate</div>
+      <div class="panel-value" id="ring-hr">--</div>
+      <div class="panel-unit">BPM</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">SpO2</div>
+      <div class="panel-value" id="ring-spo2">--</div>
+      <div class="panel-unit">%</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Steps</div>
+      <div class="panel-value" id="ring-steps">--</div>
+      <div class="panel-unit">TODAY</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Battery</div>
+      <div class="panel-value" id="ring-battery-val">--</div>
+      <div class="battery-wrap">
+        <div class="battery-bar-bg">
+          <div class="battery-bar-fill" id="ring-battery-bar" style="width:0%"></div>
+        </div>
+        <span class="battery-pct" id="ring-battery-pct">--%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confidence -->
+  <div class="confidence-section">
+    <div class="confidence-header">
+      <span class="confidence-label">Biometric Confidence</span>
+      <span class="confidence-value" id="ring-confidence">0.0000</span>
+    </div>
+    <div class="confidence-desc">
+      Personal readiness indicator — builds over time as baseline data accumulates.
+      Not a system gate — personal readiness indicator only.
+    </div>
+    <div class="confidence-bar-bg">
+      <div class="confidence-bar-fill" id="ring-confidence-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Gesture -->
+  <div class="gesture-section">
+    <div class="panel-label">Last Gesture</div>
+    <div class="gesture-name" id="ring-gesture">--</div>
+    <div class="gesture-ts" id="ring-gesture-ts"></div>
+
+    <div class="gesture-mode-row">
+      <span class="mode-label">Editing Mode</span>
+      <span class="mode-badge off" id="ring-mode-badge">OFF</span>
+      <button class="toggle-btn" id="ring-mode-toggle" onclick="toggleEditMode()">
+        Enable Editing
+      </button>
+    </div>
+  </div>
+
+  <!-- 24h HR chart -->
+  <div class="chart-section">
+    <div class="panel-label" style="margin-bottom:8px">Heart Rate — Last 24h</div>
+    <div id="ring-chart-container">
+      <div class="chart-empty" id="ring-chart-empty">No data yet</div>
+      <svg id="ring-hr-chart" style="display:none"></svg>
+    </div>
+  </div>
+
+  <div class="last-updated">Last updated: <span id="ring-last-updated">--</span></div>
+</div>
+
+<script>
+  const RING_API = "http://192.168.1.5:7744";
+  let currentMode = "off";
+
+  // ── Fetch and render ──────────────────────────────────────────────────────
+  async function fetchJSON(path) {
+    const res = await fetch(RING_API + path);
+    if (!res.ok) throw new Error(res.status);
+    return res.json();
+  }
+
+  async function update() {
+    try {
+      const [status, bio, baseline, gesture] = await Promise.all([
+        fetchJSON("/status"),
+        fetchJSON("/biometrics/latest"),
+        fetchJSON("/baseline"),
+        fetchJSON("/gesture/latest"),
+      ]);
+
+      renderStatus(status);
+      renderBiometrics(bio);
+      renderBaseline(baseline);
+      renderGesture(gesture);
+
+      // chart loads slightly async
+      fetchJSON("/biometrics/history?hours=24").then(renderChart).catch(() => {});
+
+      document.getElementById("ring-last-updated").textContent =
+        new Date().toLocaleTimeString();
+
+    } catch (e) {
+      setOffline();
+    }
+  }
+
+  function renderStatus(s) {
+    const dot  = document.getElementById("ring-dot");
+    const text = document.getElementById("ring-status-text");
+    if (s.connected) {
+      dot.className  = "dot online";
+      text.className = "status-text online";
+      text.textContent = "ONLINE";
+    } else {
+      setOffline();
+    }
+    // Sync mode badge from server state
+    if (s.gesture_mode !== currentMode) {
+      currentMode = s.gesture_mode;
+      applyModeBadge(currentMode);
+    }
+  }
+
+  function setOffline() {
+    document.getElementById("ring-dot").className  = "dot offline";
+    const text = document.getElementById("ring-status-text");
+    text.className = "status-text offline";
+    text.textContent = "OFFLINE";
+  }
+
+  function renderBiometrics(bio) {
+    setText("ring-hr",    bio.heart_rate ?? "--");
+    setText("ring-spo2",  bio.spo2       ?? "--");
+    setText("ring-steps", bio.steps      ?? "--");
+
+    const pct = bio.battery;
+    setText("ring-battery-val", pct != null ? pct : "--");
+    setText("ring-battery-pct", pct != null ? pct + "%" : "--%");
+
+    const bar = document.getElementById("ring-battery-bar");
+    if (pct != null) {
+      bar.style.width = pct + "%";
+      bar.className = "battery-bar-fill" +
+        (pct <= 15 ? " crit" : pct <= 30 ? " low" : "");
+    }
+  }
+
+  function renderBaseline(b) {
+    const c = b.confidence ?? 0;
+    setText("ring-confidence", c.toFixed(4));
+    document.getElementById("ring-confidence-bar").style.width =
+      Math.min(c * 100, 100).toFixed(1) + "%";
+  }
+
+  function renderGesture(g) {
+    if (g.gesture) {
+      setText("ring-gesture", g.gesture);
+      const ts = g.ts ? new Date(g.ts * 1000).toLocaleTimeString() : "";
+      setText("ring-gesture-ts", ts);
+    }
+    if (g.mode) {
+      currentMode = g.mode;
+      applyModeBadge(g.mode);
+    }
+  }
+
+  function applyModeBadge(mode) {
+    const badge  = document.getElementById("ring-mode-badge");
+    const btn    = document.getElementById("ring-mode-toggle");
+    badge.textContent = mode.toUpperCase();
+    badge.className   = "mode-badge " + mode;
+    btn.textContent   = mode === "editing" ? "Disable Editing" : "Enable Editing";
+  }
+
+  // ── Editing mode toggle ───────────────────────────────────────────────────
+  async function toggleEditMode() {
+    const next = currentMode === "editing" ? "off" : "editing";
+    try {
+      await fetch(RING_API + "/gesture/mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: next }),
+      });
+      currentMode = next;
+      applyModeBadge(next);
+    } catch (e) {
+      console.error("Mode toggle failed:", e);
+    }
+  }
+
+  // ── SVG HR chart ──────────────────────────────────────────────────────────
+  function renderChart(history) {
+    const container = document.getElementById("ring-chart-container");
+    const svg       = document.getElementById("ring-hr-chart");
+    const empty     = document.getElementById("ring-chart-empty");
+
+    // Filter valid HR readings
+    const points = history
+      .filter(r => r.heart_rate != null && r.heart_rate > 0)
+      .map(r => ({ ts: r.ts, hr: r.heart_rate }));
+
+    if (points.length < 2) {
+      svg.style.display   = "none";
+      empty.style.display = "block";
+      return;
+    }
+
+    svg.style.display   = "block";
+    empty.style.display = "none";
+
+    const W = svg.clientWidth  || 600;
+    const H = 100;
+    const PAD = { top: 8, right: 8, bottom: 8, left: 8 };
+
+    const minTs = points[0].ts;
+    const maxTs = points[points.length - 1].ts;
+    const minHR = Math.min(...points.map(p => p.hr));
+    const maxHR = Math.max(...points.map(p => p.hr));
+    const hrRange = maxHR - minHR || 1;
+
+    const scaleX = ts =>
+      PAD.left + ((ts - minTs) / (maxTs - minTs)) * (W - PAD.left - PAD.right);
+    const scaleY = hr =>
+      PAD.top + (1 - (hr - minHR) / hrRange) * (H - PAD.top - PAD.bottom);
+
+    const d = points
+      .map((p, i) => `${i === 0 ? "M" : "L"}${scaleX(p.ts).toFixed(1)},${scaleY(p.hr).toFixed(1)}`)
+      .join(" ");
+
+    // Fill area under line
+    const fillD = d +
+      ` L${scaleX(maxTs).toFixed(1)},${H - PAD.bottom}` +
+      ` L${scaleX(minTs).toFixed(1)},${H - PAD.bottom} Z`;
+
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="hrGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#00ff88" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#00ff88" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+      <path d="${fillD}" fill="url(#hrGrad)" stroke="none"/>
+      <path d="${d}"     fill="none" stroke="#00ff88" stroke-width="1.5"
+            stroke-linejoin="round" stroke-linecap="round"/>
+      <text x="${PAD.left}" y="${scaleY(maxHR) - 3}"
+            fill="#444466" font-size="9" font-family="monospace">${maxHR}</text>
+      <text x="${PAD.left}" y="${scaleY(minHR) + 10}"
+            fill="#444466" font-size="9" font-family="monospace">${minHR}</text>
+    `;
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────────────────
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  // ── Poll ──────────────────────────────────────────────────────────────────
+  update();
+  setInterval(update, 5000);
+</script>
+
+</body>
+</html>

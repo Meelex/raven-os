@@ -1,0 +1,21 @@
+[Unit]
+Description=Raven Ring Framework — COLMI R02 biometric daemon
+After=network.target bluetooth.target
+Wants=bluetooth.target
+
+[Service]
+Type=simple
+User=duat
+WorkingDirectory=/home/duat/duat
+ExecStart=/usr/bin/python3 /home/duat/duat/raven_ring.py
+Restart=always
+RestartSec=10
+# Give bluetoothd time to settle on boot before the first connect attempt
+StartLimitIntervalSec=60
+StartLimitBurst=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=raven-ring
+
+[Install]
+WantedBy=multi-user.target
