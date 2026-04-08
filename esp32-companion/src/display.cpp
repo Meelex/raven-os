@@ -12,6 +12,21 @@ static const int MENU_LEN = 6;
 static uint8_t g_batt_pct      = 100;
 static bool    g_dungeon_active = false;
 
+// ── Partial refresh ghosting counter ─────────────────────────
+// E-paper accumulates ghost pixels over many partial updates.
+// Every FULL_REFRESH_EVERY calls we slip in one full refresh to reset.
+static int g_partial_count = 0;
+#define FULL_REFRESH_EVERY 20
+
+static void do_refresh(CompanionDisplay* disp) {
+    if (++g_partial_count >= FULL_REFRESH_EVERY) {
+        g_partial_count = 0;
+        disp->epd->EPD_Display();   // full clear every 20 updates
+    } else {
+        disp->epd->EPD_DisplayPart();
+    }
+}
+
 void display_set_status(uint8_t batt, bool dng) {
     g_batt_pct      = batt;
     g_dungeon_active = dng;
@@ -224,7 +239,7 @@ void screen_boot(CompanionDisplay* disp, const char* comp_id) {
 }
 
 void screen_companion(CompanionDisplay* disp, const Companion* c, bool duat_online) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
     draw_status_bar(disp, g_batt_pct, g_dungeon_active);
 
     // Sprite — centered in upper region (status bar at top 10px, content y=10..128)
@@ -255,11 +270,11 @@ void screen_companion(CompanionDisplay* disp, const Companion* c, bool duat_onli
     // Duat online indicator (small dot bottom-left)
     if (duat_online) disp->fillCircle(5, EPD_HEIGHT - 5, 3, BLACK);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_menu(CompanionDisplay* disp, int selected) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     disp->setTextSize(1);
     disp->setTextColor(BLACK);
@@ -282,11 +297,11 @@ void screen_menu(CompanionDisplay* disp, int selected) {
     }
     disp->setTextColor(BLACK);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_stats(CompanionDisplay* disp, const Companion* c) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
     draw_status_bar(disp, g_batt_pct, g_dungeon_active);
 
     draw_centered_text(disp, "STATS", STATUS_BAR_H + 4, 1);
@@ -320,11 +335,11 @@ void screen_stats(CompanionDisplay* disp, const Companion* c) {
     snprintf(line, sizeof(line), "Losses: %d", c->losses);
     disp->setCursor(10, oy + 130); disp->print(line);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_battle_scan(CompanionDisplay* disp, const char** names, int count) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     draw_centered_text(disp, "BATTLE", 4, 1);
     disp->drawLine(0, 14, EPD_WIDTH, 14, BLACK);
@@ -344,11 +359,11 @@ void screen_battle_scan(CompanionDisplay* disp, const char** names, int count) {
         draw_centered_text(disp, "A=challenge  B=back", 160, 1);
     }
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_battle_wait(CompanionDisplay* disp) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     draw_centered_text(disp, "BATTLE", 4, 1);
     disp->drawLine(0, 14, EPD_WIDTH, 14, BLACK);
@@ -359,7 +374,7 @@ void screen_battle_wait(CompanionDisplay* disp) {
     draw_centered_text(disp, "....", 80, 2);
     draw_centered_text(disp, "A=cancel", 160, 1);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_battle_fight(CompanionDisplay* disp,
@@ -367,7 +382,7 @@ void screen_battle_fight(CompanionDisplay* disp,
                           int round, int my_hp, int opp_hp,
                           const char* action)
 {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     // Player sprite (left)
     sprite_for(disp, me->id, 48, 70, 9);
@@ -400,14 +415,14 @@ void screen_battle_fight(CompanionDisplay* disp,
     // Action text
     draw_centered_text(disp, action, 155, 1);
 
-    disp->epd->EPD_DisplayPart();
+    do_refresh(disp);
 }
 
 void screen_battle_result(CompanionDisplay* disp,
                            bool won, int rounds,
                            const char* opp_name)
 {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     draw_centered_text(disp, won ? "VICTORY!" : "DEFEAT", 20, 2);
 
@@ -424,23 +439,23 @@ void screen_battle_result(CompanionDisplay* disp,
     draw_centered_text(disp, "Result queued for sync", 110, 1);
     draw_centered_text(disp, "A=continue", 160, 1);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_sync(CompanionDisplay* disp, const char* status) {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     draw_centered_text(disp, "SYNC", 4, 1);
     disp->drawLine(0, 14, EPD_WIDTH, 14, BLACK);
     draw_centered_text(disp, status, 60, 1);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 void screen_settings(CompanionDisplay* disp,
                       const char* device_id, const char* comp_id, int selected)
 {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
 
     draw_centered_text(disp, "SETTINGS", 4, 1);
     disp->drawLine(0, 14, EPD_WIDTH, 14, BLACK);
@@ -463,7 +478,7 @@ void screen_settings(CompanionDisplay* disp,
     }
     disp->setTextColor(BLACK);
 
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 // ── Status bar ────────────────────────────────────────────────
@@ -498,7 +513,7 @@ void draw_status_bar(CompanionDisplay* disp, uint8_t batt_pct, bool dungeon_acti
 void screen_dungeon(CompanionDisplay* disp, const DungeonState* d,
                     const Companion* c, uint8_t batt_pct)
 {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
     draw_status_bar(disp, batt_pct, true);
 
     int y = STATUS_BAR_H + 2;
@@ -602,7 +617,7 @@ void screen_dungeon(CompanionDisplay* disp, const DungeonState* d,
     disp->print(stats);
 
     draw_centered_text(disp, "A/B=back", EPD_HEIGHT - 9, 1);
-    disp->epd->EPD_Display();
+    do_refresh(disp);
 }
 
 // ── Dungeon combat partial refresh ────────────────────────────
@@ -610,7 +625,7 @@ void screen_dungeon(CompanionDisplay* disp, const DungeonState* d,
 void screen_dungeon_part(CompanionDisplay* disp, const DungeonState* d,
                          const Companion* c, uint8_t batt_pct)
 {
-    disp->epd->EPD_Clear();
+    disp->fillScreen(WHITE);
     draw_status_bar(disp, batt_pct, true);
 
     int y = STATUS_BAR_H + 2;
@@ -647,7 +662,7 @@ void screen_dungeon_part(CompanionDisplay* disp, const DungeonState* d,
         }
     }
 
-    disp->epd->EPD_DisplayPart();
+    do_refresh(disp);
 }
 
 // ── Sleep screen ──────────────────────────────────────────────
